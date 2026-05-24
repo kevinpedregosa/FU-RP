@@ -1,0 +1,71 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { ArrowLeft, RefreshCw } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { InferenceResponse } from "@/lib/types";
+
+import ConfidenceGauge from "./ConfidenceGauge";
+import ExportPanel from "./ExportPanel";
+import FrondCountCard from "./FrondCountCard";
+import ImageComparison from "./ImageComparison";
+
+type ResultsDashboardProps = {
+  result: InferenceResponse;
+};
+
+const variants = {
+  container: { transition: { staggerChildren: 0.1 } },
+  item: {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+  },
+};
+
+export default function ResultsDashboard({ result }: ResultsDashboardProps) {
+  const router = useRouter();
+
+  return (
+    <motion.div
+      variants={variants.container}
+      initial="initial"
+      animate="animate"
+      className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8"
+    >
+      <motion.div variants={variants.item} className="flex flex-col gap-4">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <Button variant="outline" onClick={() => router.push("/upload")}>
+            <ArrowLeft data-icon="inline-start" />
+            Back
+          </Button>
+          <h1 className="text-3xl font-bold">Analysis Results</h1>
+          <Button onClick={() => router.push("/upload")}>
+            <RefreshCw data-icon="inline-start" />
+            New Analysis
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="secondary">{result.model_version}</Badge>
+          <Badge variant="outline">Upload {result.upload_id.slice(0, 12)}...</Badge>
+        </div>
+      </motion.div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <motion.div variants={variants.item} className="flex flex-col gap-6">
+          <ImageComparison
+            uploadId={result.upload_id}
+            overlayUrl={result.overlay_url}
+            originalFilename={`${result.upload_id}.jpg`}
+          />
+          <ExportPanel result={result} />
+        </motion.div>
+        <motion.div variants={variants.item} className="flex flex-col gap-6">
+          <FrondCountCard result={result.result} />
+          <ConfidenceGauge confidence={result.result.confidence} />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
