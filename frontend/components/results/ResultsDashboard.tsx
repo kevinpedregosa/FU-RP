@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,7 @@ const variants = {
 
 export default function ResultsDashboard({ result }: ResultsDashboardProps) {
   const router = useRouter();
+  const needsReview = result.result.confidence < 0.6;
 
   return (
     <motion.div
@@ -51,13 +52,22 @@ export default function ResultsDashboard({ result }: ResultsDashboardProps) {
           <Badge variant="secondary">{result.model_version}</Badge>
           <Badge variant="outline">Upload {result.upload_id.slice(0, 12)}...</Badge>
         </div>
+        {needsReview ? (
+          <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            <AlertTriangle className="mt-0.5 size-5 shrink-0" />
+            <span>
+              This result needs review. The counter found possible duckweed regions, but
+              image artifacts may be affecting the estimate.
+            </span>
+          </div>
+        ) : null}
       </motion.div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <motion.div variants={variants.item} className="flex flex-col gap-6">
           <ImageComparison
             uploadId={result.upload_id}
+            originalUrl={result.original_url}
             overlayUrl={result.overlay_url}
-            originalFilename={`${result.upload_id}.jpg`}
           />
           <ExportPanel result={result} />
         </motion.div>

@@ -44,14 +44,14 @@ export default function DropZone({ onFile, disabled }: DropZoneProps) {
     <div
       {...getRootProps()}
       className={cn(
-        "relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-12 text-center transition-all duration-200 cursor-pointer outline-none",
+        "relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 text-center outline-none transition-all duration-200",
         "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/30",
         isDragActive && "border-primary bg-primary/5 scale-[1.02]",
         rejectionError && "border-destructive bg-destructive/5",
         disabled && "opacity-50 cursor-not-allowed pointer-events-none"
       )}
     >
-      <input {...getInputProps()} />
+      <input {...getInputProps()} suppressHydrationWarning />
       <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
         <Upload className="size-10" />
       </div>

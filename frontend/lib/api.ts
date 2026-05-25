@@ -8,7 +8,16 @@ import type {
 } from "./types";
 
 async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, options);
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, options);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Network request failed";
+    throw {
+      detail: `Could not reach the backend at ${API_BASE_URL}. Make sure the FastAPI server is running on port 8000. (${message})`,
+      code: "BACKEND_UNAVAILABLE",
+    } satisfies ApiError;
+  }
 
   if (!response.ok) {
     let error: ApiError = { detail: response.statusText, code: `HTTP_${response.status}` };

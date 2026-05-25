@@ -43,7 +43,7 @@ def _static_url(path_value: str | None) -> str | None:
     return f"/static/{rel.as_posix()}"
 
 
-def _build_response(result: InferenceResult) -> InferenceResponse:
+def _build_response(result: InferenceResult, upload: Upload | None = None) -> InferenceResponse:
     return InferenceResponse(
         id=result.id,
         upload_id=result.upload_id,
@@ -55,6 +55,7 @@ def _build_response(result: InferenceResult) -> InferenceResponse:
         ),
         model_version=result.model_version,
         processing_ms=result.processing_ms,
+        original_url=_static_url(upload.stored_path) if upload is not None else None,
         overlay_url=_static_url(result.overlay_path),
         contour_url=_static_url(result.contour_path),
         heatmap_url=_static_url(result.heatmap_path),
@@ -128,7 +129,7 @@ async def infer(
         await db.commit()
         await db.refresh(result)
         logger.info("inference_completed", upload_id=upload.id, result_id=result.id)
-        return _build_response(result)
+        return _build_response(result, upload)
     except Exception as exc:
         upload.status = "failed"
         upload.updated_at = datetime.utcnow().isoformat()
@@ -145,7 +146,8 @@ async def get_result(
     result = await db.get(InferenceResult, result_id)
     if result is None:
         raise HTTPException(status_code=404, detail="Result not found")
-    return _build_response(result)
+    upload = await db.get(Upload, result.upload_id)
+    return _build_response(result, upload)
 
 
 @router.get("/results/by-upload/{upload_id}", response_model=InferenceResponse)
@@ -162,4 +164,5 @@ async def get_latest_result_for_upload(
     result = (await db.execute(query)).scalar_one_or_none()
     if result is None:
         raise HTTPException(status_code=404, detail="Result not found")
-    return _build_response(result)
+    upload = await db.get(Upload, result.upload_id)
+    return _build_response(result, upload)

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Leaf } from "lucide-react";
+import { AlertTriangle, Leaf } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,7 @@ type FrondCountCardProps = {
 
 export default function FrondCountCard({ result, isLoading = false }: FrondCountCardProps) {
   const [displayedCount, setDisplayedCount] = useState(0);
+  const needsReview = result ? result.confidence < 0.6 : false;
 
   useEffect(() => {
     if (!result) {
@@ -66,8 +67,21 @@ export default function FrondCountCard({ result, isLoading = false }: FrondCount
           </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <div className="font-mono text-8xl font-bold text-primary">{displayedCount}</div>
-            <div className="mt-2 text-muted-foreground">fronds detected</div>
+            <div className="font-mono text-7xl font-bold text-primary md:text-8xl">
+              {displayedCount}
+            </div>
+            <div className="mt-2 text-muted-foreground">
+              estimated fronds
+            </div>
+            {needsReview ? (
+              <div className="mt-5 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                <AlertTriangle className="mt-0.5 size-5 shrink-0" />
+                <span>
+                  Low confidence. Check the overlay and manually verify this sample before
+                  reporting the count.
+                </span>
+              </div>
+            ) : null}
             <div className="mt-6 flex flex-wrap gap-2">
               <Badge
                 variant={getConfidenceBadgeVariant(result.confidence)}

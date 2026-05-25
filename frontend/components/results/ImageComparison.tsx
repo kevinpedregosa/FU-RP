@@ -13,22 +13,22 @@ import { API_BASE_URL } from "@/lib/constants";
 
 type ImageComparisonProps = {
   uploadId: string;
+  originalUrl: string | null;
   overlayUrl: string | null;
-  originalFilename: string;
 };
 
 export default function ImageComparison({
   uploadId,
+  originalUrl,
   overlayUrl,
-  originalFilename,
 }: ImageComparisonProps) {
   const [modalSrc, setModalSrc] = useState<string | null>(null);
-  const originalSrc = `${API_BASE_URL}/static/uploads/${originalFilename}`;
+  const originalSrc = originalUrl ? `${API_BASE_URL}${originalUrl}` : null;
   const overlaySrc = overlayUrl ? `${API_BASE_URL}${overlayUrl}` : null;
 
   function renderPanel(label: string, src: string | null, segmented = false) {
     return (
-      <div className="relative min-h-[260px] overflow-hidden rounded-xl border bg-muted">
+      <div className="relative min-h-[260px] overflow-hidden rounded-lg border bg-muted">
         <Badge className="absolute left-3 top-3 z-10" variant={segmented ? "default" : "secondary"}>
           {label}
         </Badge>
@@ -62,7 +62,7 @@ export default function ImageComparison({
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Image Comparison</CardTitle>
+          <CardTitle>Segmentation Review</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

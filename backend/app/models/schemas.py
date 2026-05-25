@@ -47,6 +47,7 @@ class InferenceResponse(BaseModel):
     result: FrondCountResult
     model_version: str
     processing_ms: Optional[int]
+    original_url: Optional[str]
     overlay_url: Optional[str]
     contour_url: Optional[str]
     heatmap_url: Optional[str]

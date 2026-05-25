@@ -1,26 +1,26 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BarChart3, Cpu, Download, Upload } from "lucide-react";
+import { BarChart3, Camera, Download, Microscope } from "lucide-react";
 
 const steps = [
   {
-    icon: Upload,
-    title: "Upload Image",
+    icon: Camera,
+    title: "Capture",
     description:
-      "Drag and drop your duckweed water sample photo. Supports JPEG, PNG, TIFF up to 50MB.",
+      "Use a top-down photo with the cup centered, steady light, and visible green fronds.",
   },
   {
-    icon: Cpu,
-    title: "AI Processing",
+    icon: Microscope,
+    title: "Segment",
     description:
-      "HSV masking, watershed segmentation, and YOLOv8 instance segmentation run in parallel.",
+      "The backend isolates saturated plant-green regions and filters likely reflections or film.",
   },
   {
     icon: BarChart3,
-    title: "Frond Counting",
+    title: "Estimate",
     description:
-      "Lobe estimation and convexity analysis merge classical and deep learning counts.",
+      "Counts are reported with confidence so questionable samples can be checked manually.",
   },
   {
     icon: Download,
@@ -51,7 +51,7 @@ export default function HowItWorks() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ delay: index * 0.15, duration: 0.45 }}
-                className="rounded-xl border bg-card p-6 shadow-sm"
+              className="rounded-lg border bg-card p-6 shadow-sm"
               >
                 <div className="mb-5 flex items-center justify-between">
                   <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">

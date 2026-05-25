@@ -22,6 +22,7 @@ type InferenceResponse = {
   result: FrondCountResult;
   model_version: string;
   processing_ms: number | null;
+  original_url: string | null;
   overlay_url: string | null;
   contour_url: string | null;
   heatmap_url: string | null;

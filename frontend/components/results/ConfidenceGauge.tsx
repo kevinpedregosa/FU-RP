@@ -16,10 +16,18 @@ export default function ConfidenceGauge({ confidence, isLoading = false }: Confi
   const dashoffset = dasharray * (1 - confidence);
   const line =
     confidence >= 0.8
-      ? { text: ">= 80%: High — YOLO and classical agree", className: "text-green-500" }
+      ? { text: "High confidence", detail: "Detections are consistent.", className: "text-green-500" }
       : confidence >= 0.6
-        ? { text: "60–80%: Medium — minor variance between methods", className: "text-yellow-500" }
-        : { text: "< 60%: Low — manual verification recommended", className: "text-red-500" };
+        ? {
+            text: "Medium confidence",
+            detail: "Review the overlay before export.",
+            className: "text-yellow-600",
+          }
+        : {
+            text: "Low confidence",
+            detail: "Manual verification recommended.",
+            className: "text-red-500",
+          };
 
   return (
     <Card>
@@ -62,7 +70,10 @@ export default function ConfidenceGauge({ confidence, isLoading = false }: Confi
             confidence
           </text>
         </svg>
-        <p className={`text-center text-sm font-medium ${line.className}`}>{line.text}</p>
+        <div className="text-center">
+          <p className={`text-sm font-medium ${line.className}`}>{line.text}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{line.detail}</p>
+        </div>
       </CardContent>
     </Card>
   );

@@ -14,9 +14,24 @@ def make_oval_contour(cx: int, cy: int, rx: int, ry: int) -> np.ndarray:
     return cnts[0]
 
 
+def make_touching_oval_contour() -> np.ndarray:
+    mask = np.zeros((400, 400), dtype=np.uint8)
+    cv2.ellipse(mask, (185, 200), (28, 18), 0, 0, 360, 255, -1)
+    cv2.ellipse(mask, (220, 200), (28, 18), 0, 0, 360, 255, -1)
+    cnts, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    return cnts[0]
+
+
 def test_single_small_contour_is_one_frond() -> None:
     cnt = make_oval_contour(200, 200, 15, 10)
     assert estimate_lobes_in_contour(cnt) == 1
+
+
+def test_touching_pair_estimates_two_fronds() -> None:
+    single = make_oval_contour(100, 100, 28, 18)
+    pair = make_touching_oval_contour()
+    reference_area = cv2.contourArea(single)
+    assert estimate_lobes_in_contour(pair, reference_area) == 2
 
 
 def test_large_contour_estimates_multiple_fronds() -> None:
@@ -49,3 +64,17 @@ def test_count_fronds_classical_only_when_no_yolo() -> None:
     count, confidence = count_fronds([cnt1, cnt2], [], yolo_count=0, classical_count=2)
     assert count >= 1
     assert confidence == pytest.approx(0.5, abs=0.3)
+
+
+def test_count_fronds_splits_likely_connected_pair() -> None:
+    cnt1 = make_oval_contour(80, 80, 28, 18)
+    cnt2 = make_oval_contour(320, 320, 28, 18)
+    connected_pair = make_touching_oval_contour()
+    count, confidence = count_fronds(
+        [cnt1, cnt2, connected_pair],
+        [],
+        yolo_count=0,
+        classical_count=3,
+    )
+    assert count == 4
+    assert 0.0 <= confidence <= 1.0
