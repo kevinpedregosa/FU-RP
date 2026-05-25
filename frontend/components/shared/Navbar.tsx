@@ -1,49 +1,46 @@
 "use client";
 
-import { Leaf } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { APP_NAME } from "@/lib/constants";
+import useScrollY from "@/hooks/useScrollY";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/upload", label: "Analyze" },
   { href: "/history", label: "History" },
-  { href: "/admin", label: "Dataset" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const scrollY = useScrollY();
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Leaf className="size-5 text-primary" />
-          <span>{APP_NAME}</span>
+    <header
+      className={cn(
+        "fixed left-0 right-0 top-0 z-50 h-16 bg-transparent transition-colors duration-200",
+        scrollY > 20 && "border-b border-[var(--border)]"
+      )}
+    >
+      <div className="flex h-full items-center justify-between px-6 md:px-12">
+        <Link href="/" className="text-lg font-bold leading-none text-white">
+          FC
         </Link>
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-6 md:gap-10">
           {navLinks.map((link) => {
             const active =
               link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
-
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative py-2 text-sm transition-colors",
-                  active
-                    ? "font-medium text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                  "text-[13px] text-[var(--text-dim)] transition-colors duration-200 ease-out hover:text-white",
+                  active && "text-white"
                 )}
               >
                 {link.label}
-                {active ? (
-                  <div className="absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-primary" />
-                ) : null}
               </Link>
             );
           })}

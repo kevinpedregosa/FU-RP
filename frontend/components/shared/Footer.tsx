@@ -1,26 +1,11 @@
-import { Leaf } from "lucide-react";
-
-import { APP_NAME } from "@/lib/constants";
-
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t py-6">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 text-center sm:flex-row sm:text-left">
-        <div className="flex items-center gap-2 text-sm">
-          <Leaf className="size-4 text-primary" />
-          <span className="font-medium">{APP_NAME}</span>
-          <span className="text-muted-foreground">
-            — Automated frond counting for aquatic biology research
-          </span>
-        </div>
-        <div className="text-sm text-muted-foreground">
-          Built for undergraduate ecology research
-        </div>
-      </div>
-      <div className="mt-4 text-center text-xs text-muted-foreground">
-        © {year} {APP_NAME}. All rights reserved.
+    <footer className="mt-auto border-t border-[var(--border-dim)] bg-[var(--ink)] px-6 py-4">
+      <div className="flex flex-col justify-between gap-2 font-data text-[10px] uppercase tracking-[0.12em] text-[var(--data-ghost)] md:flex-row">
+        <span>FROND COUNTER / RESEARCH TOOL</span>
+        <span className="number">{year} / AQUATIC BIOLOGY IMAGE ANALYSIS</span>
       </div>
     </footer>
   );

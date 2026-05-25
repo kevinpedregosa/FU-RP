@@ -1,18 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronRight, Clock, Database, Leaf } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { API_BASE_URL } from "@/lib/constants";
-import { formatConfidence, formatDate, getConfidenceColor } from "@/lib/utils";
 import type { InferenceResponse } from "@/lib/types";
+
+function displayDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value.slice(0, 10);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+function confidenceColor(confidence: number) {
+  if (confidence >= 0.8) return "var(--accent)";
+  if (confidence >= 0.6) return "var(--amber-signal)";
+  return "var(--red-signal)";
+}
 
 export default function HistoryPage() {
   const router = useRouter();
@@ -26,124 +36,114 @@ export default function HistoryPage() {
       setIsLoading(true);
       try {
         const response = await fetch(`${API_BASE_URL}/api/results/history?limit=20`);
-        if (!response.ok) {
-          throw new Error("Could not load history");
-        }
+        if (!response.ok) throw new Error("Could not load history");
         const data = (await response.json()) as InferenceResponse[];
-        if (!ignore) {
-          setResults(data);
-        }
+        if (!ignore) setResults(data);
       } catch {
-        if (!ignore) {
-          setResults([]);
-        }
+        if (!ignore) setResults([]);
       } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
+        if (!ignore) setIsLoading(false);
       }
     }
 
     loadHistory();
-
     return () => {
       ignore = true;
     };
   }, []);
 
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold">Analysis History</h1>
-        <p className="text-muted-foreground">Your recent duckweed counting runs</p>
+    <main className="page-fade min-h-screen bg-black">
+      <header className="px-6 pb-12 pt-24 md:px-12 md:pt-20">
+        <div className="label mb-5 font-data">ANALYSIS LOG</div>
+        <h1 className="font-display text-[72px] font-normal leading-[0.92] tracking-[-0.02em] text-white">
+          Your results<span className="text-[var(--accent)]">.</span>
+        </h1>
+      </header>
+
+      <div className="overflow-x-auto px-6 pb-20 md:px-12">
+        <table className="w-full min-w-[760px] border-collapse">
+          <thead>
+            <tr className="border-b border-[var(--border)] text-left font-data text-[10px] uppercase tracking-[0.12em] text-[var(--text-ghost)]">
+              <th className="py-4 pr-6 font-normal">DATE</th>
+              <th className="py-4 pr-6 font-normal">FILE</th>
+              <th className="py-4 pr-6 font-normal">FRONDS</th>
+              <th className="py-4 pr-6 font-normal">CONFIDENCE</th>
+              <th className="py-4 pr-6 font-normal">DURATION</th>
+              <th className="py-4 font-normal" />
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <tr key={index} className="h-16 border-b border-white/[0.06]">
+                  <td colSpan={6} className="font-data text-xs text-[var(--text-ghost)]">
+                    loading analysis {index + 1}
+                  </td>
+                </tr>
+              ))
+            ) : results.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="pt-[200px] text-center">
+                  <div className="font-display text-5xl leading-none tracking-[-0.02em] text-[var(--text-ghost)]">
+                    No analyses yet.
+                  </div>
+                  <Link
+                    href="/upload"
+                    className="mt-6 inline-block text-sm text-[var(--accent)] underline-offset-4 hover:underline"
+                  >
+                    → Upload your first sample
+                  </Link>
+                </td>
+              </tr>
+            ) : (
+              results.map((result, index) => {
+                const confidence = Math.round(result.result.confidence * 100);
+                const color = confidenceColor(result.result.confidence);
+                return (
+                  <motion.tr
+                    key={result.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.04, duration: 0.15, ease: "easeOut" }}
+                    className="group h-16 cursor-pointer border-b border-white/[0.06] transition-colors duration-200 hover:bg-white/[0.03]"
+                    onClick={() => router.push(`/results/${result.id}`)}
+                  >
+                    <td className="number py-4 pr-6 text-xs text-[var(--text-ghost)]">
+                      {displayDate(result.created_at)}
+                    </td>
+                    <td className="max-w-[280px] truncate py-4 pr-6 text-[13px] text-white">
+                      {result.upload_id.slice(0, 12)}.jpg
+                    </td>
+                    <td className="number py-4 pr-6 text-xl font-semibold text-[var(--accent)]">
+                      {result.result.frond_count}
+                    </td>
+                    <td className="py-4 pr-6">
+                      <div className="flex items-center gap-3">
+                        <span className="h-px w-10 bg-white/10">
+                          <span
+                            className="block h-px"
+                            style={{ width: `${confidence}%`, background: color }}
+                          />
+                        </span>
+                        <span className="number text-[11px] text-[var(--text-ghost)]">
+                          {confidence}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="number py-4 pr-6 text-[11px] text-[var(--text-ghost)]">
+                      {result.processing_ms ? `${(result.processing_ms / 1000).toFixed(1)}s` : "—"}
+                    </td>
+                    <td className="py-4 text-right text-xl text-[var(--text-ghost)] transition-colors duration-200 group-hover:text-white">
+                      →
+                    </td>
+                  </motion.tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
-
-      {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Card key={index}>
-              <CardContent className="flex items-center gap-4 p-4">
-                <Skeleton className="size-16 rounded-md" />
-                <div className="flex flex-1 flex-col gap-2">
-                  <Skeleton className="h-5 w-48" />
-                  <Skeleton className="h-4 w-36" />
-                </div>
-                <Skeleton className="h-8 w-20" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : results.length === 0 ? (
-        <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 text-center">
-          <Database className="size-12 text-muted-foreground" />
-          <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold">No analyses yet</h2>
-            <p className="text-sm text-muted-foreground">
-              Completed counting runs will appear here.
-            </p>
-          </div>
-          <Button onClick={() => router.push("/upload")}>Start Counting</Button>
-        </div>
-      ) : (
-        <motion.div className="flex flex-col gap-3">
-          {results.map((result, index) => {
-            const imageSrc = result.original_url ? `${API_BASE_URL}${result.original_url}` : null;
-            const title = result.upload_id.slice(0, 12);
-
-            return (
-              <motion.div
-                key={result.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Card
-                  className="cursor-pointer transition-colors hover:bg-muted/50"
-                  onClick={() => router.push(`/results/${result.id}`)}
-                >
-                  <CardContent className="flex items-center gap-4 p-4">
-                    <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
-                      {imageSrc ? (
-                        <Image
-                          src={imageSrc}
-                          alt={`Original upload ${title}`}
-                          width={64}
-                          height={64}
-                          className="size-full object-cover"
-                          unoptimized
-                        />
-                      ) : (
-                        <Leaf className="size-7 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate font-medium">Upload {title}...</div>
-                      <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-                        <Clock className="size-4" />
-                        {formatDate(result.created_at)}
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-3">
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-primary">
-                          {result.result.frond_count}
-                        </div>
-                        <Badge
-                          variant="secondary"
-                          className={getConfidenceColor(result.result.confidence)}
-                        >
-                          {formatConfidence(result.result.confidence)}
-                        </Badge>
-                      </div>
-                      <ChevronRight className="size-5 text-muted-foreground" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-      )}
     </main>
   );
 }

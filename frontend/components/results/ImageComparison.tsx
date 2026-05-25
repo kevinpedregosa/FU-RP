@@ -1,14 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { ZoomIn, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { API_BASE_URL } from "@/lib/constants";
 
 type ImageComparisonProps = {
@@ -22,79 +15,43 @@ export default function ImageComparison({
   originalUrl,
   overlayUrl,
 }: ImageComparisonProps) {
-  const [modalSrc, setModalSrc] = useState<string | null>(null);
   const originalSrc = originalUrl ? `${API_BASE_URL}${originalUrl}` : null;
   const overlaySrc = overlayUrl ? `${API_BASE_URL}${overlayUrl}` : null;
 
-  function renderPanel(label: string, src: string | null, segmented = false) {
+  function renderImage(label: string, src: string | null, accent = false) {
     return (
-      <div className="relative h-[260px] overflow-hidden rounded-lg border bg-muted">
-        <Badge className="absolute left-3 top-3 z-10" variant={segmented ? "default" : "secondary"}>
-          {label}
-        </Badge>
+      <div className="relative min-h-[260px] bg-white/[0.03] md:min-h-[360px]">
         {src ? (
-          <>
-            <Image
-              src={src}
-              alt={`${label} image for upload ${uploadId}`}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-            <Button
-              size="icon"
-              variant="secondary"
-              className="absolute bottom-3 right-3 z-10"
-              onClick={() => setModalSrc(src)}
-              aria-label={`Zoom ${label}`}
-            >
-              <ZoomIn />
-            </Button>
-          </>
+          <Image
+            src={src}
+            alt={`${label} image for upload ${uploadId}`}
+            fill
+            className="object-contain"
+            unoptimized
+          />
         ) : (
-          <Skeleton className="h-[260px] w-full" />
+          <div className="flex h-[260px] items-center justify-center text-sm text-[var(--text-ghost)] md:h-[360px]">
+            image unavailable
+          </div>
         )}
+        <div
+          className={`number absolute bottom-4 left-4 text-[9px] ${
+            accent ? "text-[var(--accent)]" : "text-[var(--text-ghost)]"
+          }`}
+        >
+          {label}
+        </div>
       </div>
     );
   }
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Segmentation Review</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {renderPanel("Original", originalSrc)}
-            {renderPanel("Segmented", overlaySrc, true)}
-          </div>
-        </CardContent>
-      </Card>
-      <AnimatePresence>
-        {modalSrc ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex min-h-[400px] items-center justify-center bg-black/80 p-6"
-            onClick={() => setModalSrc(null)}
-          >
-            <Button
-              size="icon"
-              variant="secondary"
-              className="absolute right-6 top-6"
-              onClick={() => setModalSrc(null)}
-              aria-label="Close modal"
-            >
-              <X />
-            </Button>
-            <div className="relative h-[80vh] w-full max-w-5xl" onClick={(event) => event.stopPropagation()}>
-              <Image src={modalSrc} alt="Fullscreen result" fill className="object-contain" unoptimized />
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </>
+    <div>
+      <div className="label mb-5 text-[10px]">SEGMENTATION REVIEW</div>
+      {renderImage("ORIGINAL", originalSrc)}
+      <div className="border-t border-[var(--border)]">
+        {renderImage("SEGMENTED", overlaySrc, true)}
+      </div>
+    </div>
   );
 }

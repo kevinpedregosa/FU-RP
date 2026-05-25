@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import ExampleGallery from "@/components/landing/ExampleGallery";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
 
@@ -11,10 +10,9 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main>
+    <main className="page-fade bg-black">
       <Hero />
       <HowItWorks />
-      <ExampleGallery />
     </main>
   );
 }

@@ -1,14 +1,11 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, Upload } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 import {
   ACCEPTED_IMAGE_TYPES,
   MAX_FILE_SIZE_BYTES,
-  MAX_FILE_SIZE_MB,
 } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -44,35 +41,34 @@ export default function DropZone({ onFile, disabled }: DropZoneProps) {
     <div
       {...getRootProps()}
       className={cn(
-        "relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 text-center outline-none transition-all duration-200",
-        "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/30",
-        isDragActive && "border-primary bg-primary/5 scale-[1.02]",
-        rejectionError && "border-destructive bg-destructive/5",
-        disabled && "opacity-50 cursor-not-allowed pointer-events-none"
+        "flex min-h-[280px] cursor-pointer flex-col items-center justify-center border border-[var(--border)] bg-transparent p-12 text-center transition-colors duration-200 ease-out",
+        isDragActive && "border-[var(--accent)] bg-[var(--accent-dim)]",
+        rejectionError && "border-[var(--red-signal)]",
+        disabled && "pointer-events-none cursor-not-allowed opacity-50"
       )}
     >
       <input {...getInputProps()} suppressHydrationWarning />
-      <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
-        <Upload className="size-10" />
-      </div>
-      <p className="mb-1 text-lg font-semibold">Drop your image here</p>
-      <p className="mb-3 text-sm text-muted-foreground">or click to browse</p>
-      <p className="text-xs text-muted-foreground">
-        JPEG · PNG · TIFF · WebP up to {MAX_FILE_SIZE_MB}MB
-      </p>
-      <AnimatePresence>
-        {rejectionError ? (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mt-4 flex items-center gap-2 text-sm text-destructive"
+      <span
+        className={cn(
+          "dot-pulse size-2 rounded-full bg-[var(--accent)]",
+          isDragActive && "size-3"
+        )}
+      />
+      <div className="mt-4 text-[15px] text-white">Drop image here</div>
+      <div className="mt-1 text-[13px] text-[var(--text-dim)]">or click to select a file</div>
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
+        {["JPEG", "PNG", "TIFF", "WEBP"].map((type) => (
+          <span
+            key={type}
+            className="border border-white/15 px-2 py-1 text-[10px] uppercase tracking-[0.1em] text-[var(--text-ghost)]"
           >
-            <AlertCircle className="size-4" />
-            {rejectionError}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+            {type}
+          </span>
+        ))}
+      </div>
+      {rejectionError ? (
+        <div className="mt-5 text-xs text-[var(--red-signal)]">{rejectionError}</div>
+      ) : null}
     </div>
   );
 }

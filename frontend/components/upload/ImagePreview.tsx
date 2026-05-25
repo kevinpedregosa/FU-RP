@@ -1,12 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { FileImage, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { formatFileSize } from "@/lib/utils";
 
 type ImagePreviewProps = {
@@ -20,38 +16,32 @@ export default function ImagePreview({ file, onRemove }: ImagePreviewProps) {
   useEffect(() => {
     const objectUrl = URL.createObjectURL(file);
     setUrl(objectUrl);
-
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
+    return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <Card className="flex flex-col gap-4 p-4 sm:flex-row">
-        <div className="relative size-[120px] shrink-0 overflow-hidden rounded-xl bg-muted">
-          {url ? (
-            <Image src={url} alt={file.name} fill className="object-cover" unoptimized />
-          ) : (
-            <div className="flex size-full items-center justify-center">
-              <FileImage className="size-10 text-muted-foreground" />
-            </div>
-          )}
-          <Button
-            size="icon"
-            variant="destructive"
-            className="absolute right-2 top-2"
-            onClick={onRemove}
-            aria-label="Remove image"
-          >
-            <X />
-          </Button>
+    <div>
+      <div className="relative max-h-[240px] min-h-[160px] border-b border-[var(--border)] bg-white/[0.03]">
+        {url ? (
+          <Image src={url} alt={file.name} fill className="object-contain" unoptimized />
+        ) : null}
+      </div>
+      <div className="flex items-center justify-between gap-4 py-4">
+        <div className="min-w-0">
+          <div className="number truncate text-[13px] text-white">{file.name}</div>
+          <div className="number mt-1 text-[11px] text-[var(--text-ghost)]">
+            {formatFileSize(file.size)}
+          </div>
         </div>
-        <div className="flex min-w-0 flex-1 flex-col justify-center">
-          <div className="truncate font-medium">{file.name}</div>
-          <div className="mt-1 text-sm text-muted-foreground">{formatFileSize(file.size)}</div>
-        </div>
-      </Card>
-    </motion.div>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-2xl leading-none text-[var(--text-ghost)] transition-colors duration-200 hover:text-white"
+          aria-label="Remove image"
+        >
+          ×
+        </button>
+      </div>
+    </div>
   );
 }
