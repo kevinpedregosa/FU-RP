@@ -1,0 +1,64 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+      - name: Install dependencies
+        run: cd backend && pip install -r requirements.txt
+      - name: Run tests
+        run: cd backend && python -m pytest tests/ -v --tb=short
+        env:
+          ENVIRONMENT: development
+          DATABASE_URL: sqlite+aiosqlite:///./test.db
+          STORAGE_DIR: ./storage
+          MODELS_DIR: ./models/weights
+          LOG_LEVEL: WARNING
+          ALLOWED_ORIGINS: "http://localhost:3000"
+          YOLO_MODEL_PATH: ./models/weights/duckweed_v1.pt
+          YOLO_FALLBACK_PATH: ./models/weights/yolov8n-seg.pt
+
+  docker-build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build ./backend --tag duckweed-backend:${{ github.sha }} --tag duckweed-backend:latest
+      - name: Test container starts
+        run: |
+          docker run -d --name test-backend -p 8000:8000 \
+            -e DATABASE_URL=sqlite+aiosqlite:///./test.db \
+            -e STORAGE_DIR=./storage \
+            -e MODELS_DIR=./models/weights \
+            -e ENVIRONMENT=production \
+            -e LOG_LEVEL=WARNING \
+            -e ALLOWED_ORIGINS=http://localhost:3000 \
+            -e YOLO_MODEL_PATH=./models/weights/duckweed_v1.pt \
+            -e YOLO_FALLBACK_PATH=./models/weights/yolov8n-seg.pt \
+            duckweed-backend:latest
+          sleep 10
+          curl -f http://localhost:8000/api/health
+          docker stop test-backend

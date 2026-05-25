@@ -1,0 +1,51 @@
+# Development: docker compose up --build
+# Backend only: docker compose up backend
+# View logs: docker compose logs -f backend
+# Stop everything: docker compose down
+
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/storage:/app/storage
+      - ./backend/models:/app/models
+      - ./backend/dataset:/app/dataset
+      - backend_db:/app/data
+    environment:
+      DATABASE_URL: sqlite+aiosqlite:////app/data/duckweed.db
+      STORAGE_DIR: /app/storage
+      MODELS_DIR: /app/models/weights
+      ENVIRONMENT: development
+      LOG_LEVEL: INFO
+      ALLOWED_ORIGINS: "http://localhost:3000,http://frontend:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  backend_db:
