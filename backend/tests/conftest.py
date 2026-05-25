@@ -5,10 +5,18 @@ from pathlib import Path
 import cv2
 import numpy as np
 import pytest
+import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.database import init_db
 from app.main import app
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def initialized_database() -> None:
+    """Ensure API tests have the database schema even when ASGI lifespan is skipped."""
+    await init_db()
 
 
 @pytest.fixture
