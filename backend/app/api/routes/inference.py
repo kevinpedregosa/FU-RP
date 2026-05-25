@@ -81,22 +81,20 @@ async def infer(
         from app.core.overlay import generate_overlay
         from app.core.preprocessing import preprocess_image
         from app.core.segmentation import classical_pipeline
-        from app.ml.yolo_inference import masks_to_contours, yolo_inference
+        from app.ml.yolo_inference import yolo_inference
 
         processed = preprocess_image(img)
         mask, classical_count, contours = classical_pipeline(processed)
         masks, yolo_count, avg_conf = await yolo_inference(processed)
-        yolo_contours = masks_to_contours(masks)
-        all_contours = yolo_contours if yolo_contours else contours
         final_count, confidence = count_fronds(
-            contours=all_contours,
+            contours=contours,
             yolo_masks=masks,
             yolo_count=yolo_count,
             classical_count=classical_count,
         )
         overlay_img = generate_overlay(
             processed,
-            all_contours,
+            contours,
             final_count,
             confidence,
             yolo_masks=masks,
@@ -138,6 +136,27 @@ async def infer(
         raise HTTPException(status_code=500, detail="Inference failed") from exc
 
 
+@router.get("/results/history", response_model=list[InferenceResponse])
+async def get_history(
+    limit: int = 20,
+    offset: int = 0,
+    db: AsyncSession = Depends(get_db),
+) -> list[InferenceResponse]:
+    """Return the most recent inference results across all uploads, newest first."""
+    query = (
+        select(InferenceResult)
+        .order_by(InferenceResult.created_at.desc())
+        .limit(min(limit, 100))
+        .offset(offset)
+    )
+    results = (await db.execute(query)).scalars().all()
+    responses = []
+    for result in results:
+        upload = await db.get(Upload, result.upload_id)
+        responses.append(_build_response(result, upload))
+    return responses
+
+
 @router.get("/results/{result_id}", response_model=InferenceResponse)
 async def get_result(
     result_id: str, db: AsyncSession = Depends(get_db)
@@ -147,6 +166,62 @@ async def get_result(
     if result is None:
         raise HTTPException(status_code=404, detail="Result not found")
     upload = await db.get(Upload, result.upload_id)
+    return _build_response(result, upload)
+
+
+@router.patch("/results/{result_id}/correct", response_model=InferenceResponse)
+async def correct_count(
+    result_id: str,
+    body: dict,
+    db: AsyncSession = Depends(get_db),
+) -> InferenceResponse:
+    """Allow a researcher to manually correct the frond count for a result."""
+    result = await db.get(InferenceResult, result_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Result not found")
+
+    corrected_count = body.get("corrected_count")
+    if (
+        corrected_count is None
+        or isinstance(corrected_count, bool)
+        or not isinstance(corrected_count, int)
+        or corrected_count < 0
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail="corrected_count must be a non-negative integer",
+        )
+
+    notes = body.get("notes", "")
+    original_count = result.frond_count
+
+    result.frond_count = corrected_count
+    if "_corrected" not in result.model_version:
+        result.model_version = result.model_version + "_corrected"
+
+    existing_raw = {}
+    try:
+        existing_raw = json.loads(result.raw_json or "{}")
+    except Exception:
+        pass
+    existing_raw["manual_correction"] = {
+        "original_count": original_count,
+        "corrected_count": corrected_count,
+        "notes": notes,
+        "corrected_at": datetime.utcnow().isoformat(),
+    }
+    result.raw_json = json.dumps(existing_raw)
+
+    await db.commit()
+    await db.refresh(result)
+
+    upload = await db.get(Upload, result.upload_id)
+    logger.info(
+        "count_corrected",
+        result_id=result_id,
+        original=original_count,
+        corrected=corrected_count,
+    )
     return _build_response(result, upload)
 
 

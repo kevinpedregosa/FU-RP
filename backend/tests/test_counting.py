@@ -52,6 +52,16 @@ def test_count_fronds_yolo_takes_priority() -> None:
     assert count >= 3
 
 
+def test_count_fronds_ignores_implausibly_low_yolo() -> None:
+    contours = [
+        make_oval_contour(40 + index * 35, 200, 14, 10)
+        for index in range(8)
+    ]
+    count, confidence = count_fronds(contours, [], yolo_count=1, classical_count=8)
+    assert count == 8
+    assert confidence == pytest.approx(0.55)
+
+
 def test_count_fronds_confidence_is_clamped() -> None:
     cnt = make_oval_contour(200, 200, 20, 14)
     _, confidence = count_fronds([cnt], [], yolo_count=3, classical_count=3)

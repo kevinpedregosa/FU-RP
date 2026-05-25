@@ -15,6 +15,13 @@ from app.database import init_db
 from app.utils.logging_config import get_logger, setup_logging
 
 
+def ensure_runtime_directories() -> None:
+    """Create local runtime directories required before app startup."""
+    for subdir in ["uploads", "results", "exports"]:
+        (settings.STORAGE_DIR / subdir).mkdir(parents=True, exist_ok=True)
+    settings.MODELS_DIR.mkdir(parents=True, exist_ok=True)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Run startup and shutdown tasks."""
@@ -22,9 +29,7 @@ async def lifespan(app: FastAPI):
     logger = get_logger(__name__)
     logger.info("Starting Duckweed Frond Counter API", environment=settings.ENVIRONMENT)
     await init_db()
-    for subdir in ["uploads", "results", "exports"]:
-        (settings.STORAGE_DIR / subdir).mkdir(parents=True, exist_ok=True)
-    settings.MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    ensure_runtime_directories()
     try:
         from app.core.model_manager import ModelManager
 
@@ -50,6 +55,7 @@ app.include_router(upload_router)
 app.include_router(inference_router)
 app.include_router(dataset_router)
 
+ensure_runtime_directories()
 app.mount("/static", StaticFiles(directory=str(settings.STORAGE_DIR)), name="static")
 
 

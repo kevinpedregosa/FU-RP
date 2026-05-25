@@ -28,7 +28,7 @@ export default function ImageComparison({
 
   function renderPanel(label: string, src: string | null, segmented = false) {
     return (
-      <div className="relative min-h-[260px] overflow-hidden rounded-lg border bg-muted">
+      <div className="relative h-[260px] overflow-hidden rounded-lg border bg-muted">
         <Badge className="absolute left-3 top-3 z-10" variant={segmented ? "default" : "secondary"}>
           {label}
         </Badge>
@@ -52,7 +52,7 @@ export default function ImageComparison({
             </Button>
           </>
         ) : (
-          <Skeleton className="size-full min-h-[260px]" />
+          <Skeleton className="h-[260px] w-full" />
         )}
       </div>
     );

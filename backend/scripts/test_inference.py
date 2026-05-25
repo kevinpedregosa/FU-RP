@@ -90,10 +90,9 @@ def main() -> None:
     start_time = time.time()
     processed = preprocess_image(image)
     _mask, classical_count, contours = classical_pipeline(processed)
-    yolo_masks, yolo_count, yolo_conf, yolo_contours = run_yolo(processed)
-    all_contours = yolo_contours if yolo_contours else contours
+    yolo_masks, yolo_count, yolo_conf, _yolo_contours = run_yolo(processed)
     final_count, confidence = count_fronds(
-        contours=all_contours,
+        contours=contours,
         yolo_masks=yolo_masks,
         yolo_count=yolo_count,
         classical_count=classical_count,
@@ -114,7 +113,7 @@ def main() -> None:
 
     if args.verbose:
         print("Contour details:")
-        for index, contour in enumerate(all_contours, start=1):
+        for index, contour in enumerate(contours, start=1):
             area = cv2.contourArea(contour)
             lobe_estimate = estimate_lobes_in_contour(contour)
             print(f"  {index:02d}. area={area:.1f}, lobe_estimate={lobe_estimate}")
@@ -122,7 +121,7 @@ def main() -> None:
     if args.save_overlay:
         overlay = generate_overlay(
             processed,
-            all_contours,
+            contours,
             final_count,
             confidence,
             yolo_masks=yolo_masks,

@@ -34,7 +34,7 @@ def test_classical_pipeline_handles_blank_image() -> None:
 
 def test_classical_pipeline_filters_tiny_noise() -> None:
     img = np.full((400, 400, 3), (120, 110, 100), dtype=np.uint8)
-    cv2.ellipse(img, (200, 200), (40, 28), 0, 0, 360, (60, 180, 60), -1)
+    cv2.ellipse(img, (200, 200), (28, 18), 0, 0, 360, (60, 180, 60), -1)
     _, count, contours = classical_pipeline(img)
     assert count >= 1
     for cnt in contours:

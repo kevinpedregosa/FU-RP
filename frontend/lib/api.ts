@@ -108,3 +108,15 @@ export function exportResultCsv(result: InferenceResponse): void {
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   triggerDownload(blob, `frond_result_${result.id}.csv`);
 }
+
+export async function correctCount(
+  resultId: string,
+  correctedCount: number,
+  notes?: string
+): Promise<InferenceResponse> {
+  return fetchJson<InferenceResponse>(`/api/results/${resultId}/correct`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ corrected_count: correctedCount, notes: notes ?? "" }),
+  });
+}

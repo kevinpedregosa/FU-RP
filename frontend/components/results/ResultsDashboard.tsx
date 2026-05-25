@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react";
+import { AlertTriangle, ArrowLeft, RefreshCw, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ const variants = {
 
 export default function ResultsDashboard({ result }: ResultsDashboardProps) {
   const router = useRouter();
+  const [correctedCount, setCorrectedCount] = useState<number | null>(null);
   const needsReview = result.result.confidence < 0.6;
 
   return (
@@ -52,6 +54,23 @@ export default function ResultsDashboard({ result }: ResultsDashboardProps) {
           <Badge variant="secondary">{result.model_version}</Badge>
           <Badge variant="outline">Upload {result.upload_id.slice(0, 12)}...</Badge>
         </div>
+        {correctedCount !== null ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-900"
+          >
+            <span>Count manually updated to {correctedCount}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setCorrectedCount(null)}
+              aria-label="Dismiss correction message"
+            >
+              <X />
+            </Button>
+          </motion.div>
+        ) : null}
         {needsReview ? (
           <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
             <AlertTriangle className="mt-0.5 size-5 shrink-0" />
@@ -72,7 +91,12 @@ export default function ResultsDashboard({ result }: ResultsDashboardProps) {
           <ExportPanel result={result} />
         </motion.div>
         <motion.div variants={variants.item} className="flex flex-col gap-6">
-          <FrondCountCard result={result.result} />
+          <FrondCountCard
+            result={result.result}
+            resultId={result.id}
+            modelVersion={result.model_version}
+            onCorrected={(n) => setCorrectedCount(n)}
+          />
           <ConfidenceGauge confidence={result.result.confidence} />
         </motion.div>
       </div>
