@@ -56,8 +56,8 @@ export default function HistoryPage() {
     <main className="page-fade min-h-screen bg-black">
       <header className="px-6 pb-12 pt-24 md:px-12 md:pt-20">
         <div className="label mb-5 font-data">ANALYSIS LOG</div>
-        <h1 className="font-display text-[72px] font-normal leading-[0.92] tracking-[-0.02em] text-white">
-          Your results<span className="text-[var(--accent)]">.</span>
+        <h1 className="font-display text-[72px] font-normal leading-[0.92] tracking-[-0.02em] text-[var(--text-primary)]">
+          Your results
         </h1>
       </header>
 
@@ -112,7 +112,7 @@ export default function HistoryPage() {
                     <td className="number py-4 pr-6 text-xs text-[var(--text-ghost)]">
                       {displayDate(result.created_at)}
                     </td>
-                    <td className="max-w-[280px] truncate py-4 pr-6 text-[13px] text-white">
+                    <td className="max-w-[280px] truncate py-4 pr-6 text-[13px] text-[var(--text-primary)]">
                       {result.upload_id.slice(0, 12)}.jpg
                     </td>
                     <td className="number py-4 pr-6 text-xl font-semibold text-[var(--accent)]">
@@ -134,7 +134,7 @@ export default function HistoryPage() {
                     <td className="number py-4 pr-6 text-[11px] text-[var(--text-ghost)]">
                       {result.processing_ms ? `${(result.processing_ms / 1000).toFixed(1)}s` : "—"}
                     </td>
-                    <td className="py-4 text-right text-xl text-[var(--text-ghost)] transition-colors duration-200 group-hover:text-white">
+                    <td className="py-4 text-right text-xl text-[var(--text-ghost)] transition-colors duration-200 group-hover:text-[var(--text-primary)]">
                       →
                     </td>
                   </motion.tr>

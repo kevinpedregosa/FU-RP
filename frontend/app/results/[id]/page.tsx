@@ -57,7 +57,7 @@ export default function ResultPage() {
       <main className="page-fade flex min-h-screen items-center bg-black px-6 md:px-12">
         <div>
           <div className="label mb-5">RESULT UNAVAILABLE</div>
-          <h1 className="font-display text-[clamp(56px,8vw,96px)] font-normal leading-[0.92] tracking-[-0.02em] text-white">
+          <h1 className="font-display text-[clamp(56px,8vw,96px)] font-normal leading-[0.92] tracking-[-0.02em] text-[var(--text-primary)]">
             Could not load
             <br />
             this analysis.

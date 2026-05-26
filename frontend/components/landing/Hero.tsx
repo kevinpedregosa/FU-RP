@@ -1,11 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 
 import WireframeMesh from "./WireframeMesh";
-
-const words = ["Duckweed", "Frond", "Counter"];
 
 export default function Hero() {
   return (
@@ -13,60 +12,40 @@ export default function Hero() {
       <WireframeMesh intensity={1} />
 
       <div className="absolute left-1/2 top-20 z-10 -translate-x-1/2 text-center">
-        <div className="whitespace-nowrap font-display text-[clamp(40px,5vw,72px)] font-normal leading-[0.92] tracking-[-0.02em] text-white">
-          Fusion Research Project
+        <div className="flex items-center justify-center gap-5 whitespace-nowrap">
+          <Image
+            src="/fusion-logo.png"
+            alt="Fusion logo"
+            width={92}
+            height={92}
+            priority
+            className="h-[clamp(56px,6vw,92px)] w-[clamp(56px,6vw,92px)] object-contain"
+          />
+          <div className="font-display text-[clamp(44px,5.6vw,80px)] font-bold leading-[0.92] tracking-[-0.02em] text-white">
+            Fusion Research Project
+          </div>
         </div>
-        <div className="mt-3 whitespace-nowrap text-[11px] uppercase tracking-[0.12em] text-[var(--text-ghost)]">
-          full-stack computer vision system
+        <div className="mt-5 whitespace-nowrap text-[clamp(15px,1.45vw,22px)] uppercase tracking-[0.12em] text-white">
+          Full-Stack Computer Vision System
         </div>
       </div>
 
-      <Link
-        href="/upload"
-        className="group absolute right-6 top-32 z-10 max-w-[160px] text-[15px] leading-tight text-white underline-offset-4 transition-colors duration-200 hover:underline md:right-12 md:top-20"
-      >
-        Begin Analysis{" "}
-        <span className="inline-block transition-transform duration-200 ease-out group-hover:translate-x-1">
-          →
-        </span>
-      </Link>
-
-      <div className="absolute bottom-20 left-6 z-10 md:left-12">
-        <h1 className="font-display text-[clamp(56px,7vw,88px)] font-normal leading-[0.92] tracking-[-0.02em] text-white">
-          {words.map((word, index) => (
-            <motion.span
-              key={word}
-              className="block overflow-hidden"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: index * 0.08,
-                duration: 0.4,
-                ease: "easeOut",
-              }}
-            >
-              {word}
-              {index === words.length - 1 ? <span className="text-[var(--accent)]">.</span> : null}
-            </motion.span>
-          ))}
-        </h1>
+      <div className="absolute left-1/2 top-1/2 z-10 flex w-full -translate-x-1/2 -translate-y-1/2 flex-col items-center px-6 text-center">
+        <Link
+          href="/upload"
+          className="group text-[clamp(28px,3.4vw,58px)] leading-tight text-[var(--text-primary)] underline-offset-4 transition-colors duration-200 hover:underline"
+        >
+          Begin Bioimage Analysis{" "}
+          <span className="inline-block transition-transform duration-200 ease-out group-hover:translate-x-2">
+            →
+          </span>
+        </Link>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
-        className="absolute bottom-20 right-6 z-10 max-w-[280px] text-right font-display text-[clamp(28px,3.5vw,44px)] font-normal leading-[0.96] tracking-[-0.02em] text-[var(--text-dim)] md:right-12"
-      >
-        Upload a sample.
-        <br />
-        Get a count.
-      </motion.div>
-
-      <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2">
-        <div className="text-[10px] text-[var(--text-ghost)]">scroll</div>
-        <div className="h-6 w-px bg-white/20">
-          <div className="scroll-line h-6 w-px bg-white" />
+      <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3">
+        <div className="text-[18px] text-[var(--text-ghost)]">scroll</div>
+        <div className="h-10 w-px bg-white/20">
+          <div className="scroll-line h-10 w-px bg-white" />
         </div>
       </div>
     </section>

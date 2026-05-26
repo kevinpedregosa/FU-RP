@@ -14,7 +14,7 @@ export default function ExportPanel({ result }: ExportPanelProps) {
       <div className="flex flex-col items-start gap-3">
         <button
           type="button"
-          className="group text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-white"
+          className="group text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text-primary)]"
           onClick={() => exportResultJson(result)}
         >
           <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
@@ -24,7 +24,7 @@ export default function ExportPanel({ result }: ExportPanelProps) {
         </button>
         <button
           type="button"
-          className="group text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-white"
+          className="group text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text-primary)]"
           onClick={() => exportResultCsv(result)}
         >
           <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">

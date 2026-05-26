@@ -62,7 +62,7 @@ export default function AdminPage() {
   return (
     <main className="page-fade min-h-screen bg-black px-6 pb-20 pt-24 md:px-12">
       <div className="label mb-5">DATASET ADMIN</div>
-      <h1 className="font-display text-[clamp(56px,8vw,96px)] font-normal leading-[0.92] tracking-[-0.02em] text-white">
+      <h1 className="font-display text-[clamp(56px,8vw,96px)] font-normal leading-[0.92] tracking-[-0.02em] text-[var(--text-primary)]">
         Training
         <br />
         controls<span className="text-[var(--accent)]">.</span>
@@ -120,7 +120,7 @@ export default function AdminPage() {
               <select
                 value={architecture}
                 onChange={(event) => setArchitecture(event.target.value)}
-                className="border-0 bg-transparent text-sm text-white outline-none"
+                className="border-0 bg-transparent text-sm text-[var(--text-primary)] outline-none"
               >
                 <option value="yolov8n-seg">yolov8n-seg</option>
                 <option value="yolov8s-seg">yolov8s-seg</option>
@@ -134,14 +134,14 @@ export default function AdminPage() {
                 max={300}
                 value={epochs}
                 onChange={(event) => setEpochs(Number(event.target.value))}
-                className="border-0 bg-transparent text-sm text-white outline-none"
+                className="border-0 bg-transparent text-sm text-[var(--text-primary)] outline-none"
               />
             </label>
           </div>
 
           <button
             type="button"
-            className="group mt-10 text-sm text-white underline-offset-4 transition-colors duration-200 hover:underline disabled:text-[var(--text-ghost)]"
+            className="group mt-10 text-sm text-[var(--text-primary)] underline-offset-4 transition-colors duration-200 hover:underline disabled:text-[var(--text-ghost)]"
             disabled={total < 10 || retraining}
             onClick={startRetraining}
           >

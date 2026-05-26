@@ -30,10 +30,10 @@ export default function UploadPage() {
       <section className="relative z-10 flex min-h-screen w-full items-center px-6 py-24 md:px-20 lg:w-1/2">
         <div className="w-full max-w-[560px]">
           <div className="label mb-5">SAMPLE ANALYSIS</div>
-          <h1 className="font-display text-[64px] font-normal leading-[0.92] tracking-[-0.02em] text-white">
+          <h1 className="font-display text-[64px] font-normal leading-[0.92] tracking-[-0.02em] text-[var(--text-primary)]">
             Upload your
             <br />
-            sample<span className="text-[var(--accent)]">.</span>
+            sample
           </h1>
 
           <div className="mt-8">

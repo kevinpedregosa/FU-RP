@@ -28,7 +28,7 @@ export default function ImagePreview({ file, onRemove }: ImagePreviewProps) {
       </div>
       <div className="flex items-center justify-between gap-4 py-4">
         <div className="min-w-0">
-          <div className="number truncate text-[13px] text-white">{file.name}</div>
+          <div className="number truncate text-[13px] text-[var(--text-primary)]">{file.name}</div>
           <div className="number mt-1 text-[11px] text-[var(--text-ghost)]">
             {formatFileSize(file.size)}
           </div>
@@ -36,7 +36,7 @@ export default function ImagePreview({ file, onRemove }: ImagePreviewProps) {
         <button
           type="button"
           onClick={onRemove}
-          className="text-2xl leading-none text-[var(--text-ghost)] transition-colors duration-200 hover:text-white"
+          className="text-2xl leading-none text-[var(--text-ghost)] transition-colors duration-200 hover:text-[var(--text-primary)]"
           aria-label="Remove image"
         >
           ×

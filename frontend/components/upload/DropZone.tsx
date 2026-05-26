@@ -54,7 +54,7 @@ export default function DropZone({ onFile, disabled }: DropZoneProps) {
           isDragActive && "size-3"
         )}
       />
-      <div className="mt-4 text-[15px] text-white">Drop image here</div>
+      <div className="mt-4 text-[15px] text-[var(--text-primary)]">Drop image here</div>
       <div className="mt-1 text-[13px] text-[var(--text-dim)]">or click to select a file</div>
       <div className="mt-6 flex flex-wrap justify-center gap-2">
         {["JPEG", "PNG", "TIFF", "WEBP"].map((type) => (

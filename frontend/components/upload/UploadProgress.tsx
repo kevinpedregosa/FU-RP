@@ -39,7 +39,7 @@ export default function UploadProgress({ state }: UploadProgressProps) {
           <span>{line.text}</span>
           <span className={error ? "text-[var(--red-signal)]" : "text-[var(--accent)]"}>
             {line.status}
-            {line.active ? <span className="cursor-blink text-white">█</span> : null}
+            {line.active ? <span className="cursor-blink text-[var(--text-primary)]">█</span> : null}
           </span>
         </div>
       ))}

@@ -27,7 +27,7 @@ const config = {
         "blue-signal": "var(--blue-signal)",
       },
       fontFamily: {
-        display: ["var(--font-instrument-serif)", "Instrument Serif", "serif"],
+        display: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
         mono: ["var(--font-jetbrains-mono)", "JetBrains Mono", "monospace"],
         sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
       },

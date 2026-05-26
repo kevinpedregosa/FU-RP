@@ -37,8 +37,8 @@
   :root {
     --background: #000000;
     --text-primary: #FFFFFF;
-    --text-dim: rgba(255, 255, 255, 0.45);
-    --text-ghost: rgba(255, 255, 255, 0.18);
+    --text-dim: #FFFFFF;
+    --text-ghost: #FFFFFF;
     --accent: #3ECF8E;
     --accent-dim: rgba(62, 207, 142, 0.15);
     --border: rgba(255, 255, 255, 0.08);
@@ -91,7 +91,7 @@
   h2,
   h3 {
     color: var(--text-primary);
-    font-family: var(--font-instrument-serif), "Instrument Serif", serif;
+    font-family: var(--font-inter), Inter, system-ui, sans-serif;
     font-weight: 400;
     line-height: 0.92;
     letter-spacing: -0.02em;
@@ -124,7 +124,7 @@
 
 @layer utilities {
   .font-display {
-    font-family: var(--font-instrument-serif), "Instrument Serif", serif;
+    font-family: var(--font-inter), Inter, system-ui, sans-serif;
   }
 
   .font-data,

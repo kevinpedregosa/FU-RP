@@ -12,7 +12,7 @@ type ResultsDashboardProps = {
 };
 
 function confidenceColor(confidence: number) {
-  if (confidence >= 0.8) return "text-white";
+  if (confidence >= 0.8) return "text-[var(--text-primary)]";
   if (confidence >= 0.6) return "text-[var(--amber-signal)]";
   return "text-[var(--red-signal)]";
 }
@@ -69,13 +69,13 @@ export default function ResultsDashboard({ result }: ResultsDashboardProps) {
         <div className="mt-8 flex gap-6 md:absolute md:right-12 md:top-1/2 md:mt-0 md:-translate-y-1/2 md:flex-col md:items-end">
           <Link
             href="/upload"
-            className="text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-white"
+            className="text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text-primary)]"
           >
             New Analysis →
           </Link>
           <Link
             href="/history"
-            className="text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-white"
+            className="text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text-primary)]"
           >
             ← Back
           </Link>
@@ -107,7 +107,7 @@ export default function ResultsDashboard({ result }: ResultsDashboardProps) {
                         ? "text-[var(--accent)]"
                         : ghost
                           ? "text-[var(--text-ghost)]"
-                          : "text-white"
+                          : "text-[var(--text-primary)]"
                     }`}
                   >
                     {value}
@@ -135,19 +135,19 @@ export default function ResultsDashboard({ result }: ResultsDashboardProps) {
             <section className="mt-6">
               <div className="label mb-3 text-[10px]">MANUAL CORRECTION</div>
               <form onSubmit={submitCorrection} className="flex items-end gap-3">
-                <span className="number text-2xl text-white">[</span>
+                <span className="number text-2xl text-[var(--text-primary)]">[</span>
                 <input
                   value={correction}
                   onChange={(event) => setCorrection(event.target.value)}
-                  className="number h-10 w-20 border-0 border-b border-white/30 bg-transparent text-center text-2xl text-white outline-none"
+                  className="number h-10 w-20 border-0 border-b border-white/30 bg-transparent text-center text-2xl text-[var(--text-primary)] outline-none"
                   inputMode="numeric"
                   aria-label="Manual frond count"
                 />
-                <span className="number text-2xl text-white">]</span>
+                <span className="number text-2xl text-[var(--text-primary)]">]</span>
                 <span className="text-sm text-[var(--text-dim)]">fronds</span>
                 <button
                   type="submit"
-                  className="text-xl text-[var(--text-dim)] transition-colors duration-200 hover:text-white"
+                  className="text-xl text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text-primary)]"
                   aria-label="Submit manual correction"
                 >
                   →
@@ -161,7 +161,7 @@ export default function ResultsDashboard({ result }: ResultsDashboardProps) {
               <div className="flex flex-col items-start gap-3">
                 <button
                   type="button"
-                  className="group text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-white"
+                  className="group text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text-primary)]"
                   onClick={() => exportResultJson(result)}
                 >
                   <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
@@ -171,7 +171,7 @@ export default function ResultsDashboard({ result }: ResultsDashboardProps) {
                 </button>
                 <button
                   type="button"
-                  className="group text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-white"
+                  className="group text-sm text-[var(--text-dim)] transition-colors duration-200 hover:text-[var(--text-primary)]"
                   onClick={() => exportResultCsv(result)}
                 >
                   <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
